@@ -105,15 +105,15 @@ def main():
 
     # Train and Test the model
     epochs = 20
-    # for t in range(epochs):
-    #     print(f"Epoch {t+1}\n-------------------------------")
-    #     train(train_dataloader, model, loss_fn, optimizer, device)
-    #     test(test_dataloader, model, loss_fn, device)
-    # print("Done!")
+    for t in range(epochs):
+        print(f"Epoch {t+1}\n-------------------------------")
+        train(train_dataloader, model, loss_fn, optimizer, device)
+        test(test_dataloader, model, loss_fn, device)
+    print("Done!")
 
     # Save the model
-    # torch.save(model.state_dict(), "model.pth")
-    # print("Saved PyTorch Model State to model.pth")
+    torch.save(model.state_dict(), "model.pth")
+    print("Saved PyTorch Model State to model.pth")
     
     # Loading models
     model = NeuralNetwork().to(device)
@@ -133,10 +133,10 @@ def main():
     ]
 
     model.eval()
-    x, y = test_data[0][0], test_data[100][1]
+    x, y = test_data[0][0], test_data[0][1]
 
-    print(x)
-    print(y)
+    # print(x)
+    # print(y)
     with torch.no_grad():
         x = x.to(device)
         pred = model(x)
