@@ -1,3 +1,17 @@
+from torch import nn, optim
+
+class xrayTrainV0():
+    def __init__(self, model:None) -> None:
+        self.loss = nn.CrossEntropyLoss()
+        self.optimizer = optim.SGD(params=model.parameters(),
+                                   lr=0.1)
+    
+    def getLoss_fn(self):
+        return self.loss
+
+    def getOptimizer(self):
+        return self.optimizer
+
 class DefaultBasicTrainers:
     def train(dataloader, model, loss_fn, optimizer, device):
         size = len(dataloader.dataset)

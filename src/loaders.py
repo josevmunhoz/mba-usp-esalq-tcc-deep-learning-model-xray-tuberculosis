@@ -1,6 +1,6 @@
 from torchvision import datasets
 
-def defaultImgLoader(path, transform:torchvision.utils.transforms) -> datasets.ImageFolder:
+def defaultImgLoader(path, transform) -> datasets.ImageFolder:
     """Defatult loader for images
 
     Args:

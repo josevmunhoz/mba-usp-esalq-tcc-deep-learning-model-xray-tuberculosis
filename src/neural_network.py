@@ -1,18 +1,18 @@
 from torch import nn
 
-class NeuralNetwork(nn.Module):
-    def __init__(self):
+class xrayModelv0(nn.Module):
+    def __init__(self,
+                 input_shape: int,
+                 hidden_units: int,
+                 output_shape: int,):
         super().__init__()
-        self.flatten = nn.Flatten()
-        self.linear_relu_stack = nn.Sequential(
-            nn.Linear(28*28, 512),
-            nn.ReLU(),
-            nn.Linear(512, 512),
-            nn.ReLU(),
-            nn.Linear(512, 10)
+        self.layer_stack = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(in_features=input_shape,
+                      out_features=hidden_units),
+            nn.Linear(in_features=hidden_units,
+                      out_features=output_shape),
         )
-
+    
     def forward(self, x):
-        x = self.flatten(x)
-        logits = self.linear_relu_stack(x)
-        return logits
+        return self.layer_stack(x)
