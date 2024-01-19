@@ -150,7 +150,7 @@ def process():
     train_loss = train_model(model=model_v0, train_dataloader=train_dataloader, device=device, train=train)
     
     ### Testing
-    test_loss, test_acc = test_model(model=model_v0, train_dataloader=train_dataloader, device=device, train=train)
+    test_loss, test_acc = test_model(model=model_v0, test_dataloader=test_dataloader, device=device, train=train)
     
     # Print out what's hapepening
     print(f"\n Train loss: {train_loss:.4f} | Test loss: {test_loss:.4f}, Test acc: {test_acc:.4f}")
