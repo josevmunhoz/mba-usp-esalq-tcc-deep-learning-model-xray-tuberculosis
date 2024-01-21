@@ -10,6 +10,7 @@ class xrayModelv0(nn.Module):
             nn.Flatten(),
             nn.Linear(in_features=input_shape,
                       out_features=hidden_units),
+            nn.ReLU(),
             nn.Linear(in_features=hidden_units,
                       out_features=output_shape),
         )
