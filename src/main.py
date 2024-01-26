@@ -16,7 +16,7 @@ from timeit import default_timer as timer
 
 PATH = "../data/raiox/classified"
 BATCH_SIZE = 32
-EPOCHS = 3
+EPOCHS = 20
 SEED = 42
 
 def prepare_data():
@@ -61,8 +61,7 @@ def train_model(model=None, train_dataset=None, device=None, train=None):
         # Add a loop to loop through the training batches
         for batch, (X, y) in enumerate(train_dataset):
             # 0.0 Moving data to desired device
-            X = X.to(device)
-            y = y.to(device)
+            X, y = X.to(device), y.to(device)
             
             # 0. Train
             model.train()
@@ -99,8 +98,7 @@ def test_model(model=None, test_dataset=None, device=None, train=None):
     with torch.inference_mode():
         for X_test, y_test in test_dataset:
             # 0. Move to device
-            X_test = X_test.to(device)
-            y_test = y_test.to(device)
+            X_test, y_test = X_test.to(device), y_test.to(device)
 
             # 1. Forward pass
             test_pred = model(X_test)
@@ -118,6 +116,34 @@ def test_model(model=None, test_dataset=None, device=None, train=None):
         test_acc /= len(test_dataset)
 
     return test_loss, test_acc
+
+def eval_model(model: torch.nn.Module,
+               data_loader: DataLoader,
+               loss_fn: torch.nn.Module,
+               accuracy_fn,
+               device):
+    """Return a dictionary containing the results of model predicting on data_loader"""
+    loss, acc = 0,0
+    model.eval()
+
+    with torch.inference_mode():
+        for X, y in data_loader:
+            X, y = X.to(device), y.to(device)
+            # Make predictions
+            y_pred = model(X)
+
+            # Accumulate the los and acc values per batch
+            loss += loss_fn(y_pred, y)
+            acc += accuracy_fn(y_true=y,
+                               y_pred=y_pred.argmax(dim=1))
+            
+        # Scale loss and acc to find the average loss/acc per batch
+        loss /= len(data_loader)
+        acc /= len(data_loader)
+
+    return {"model_name": model.__class__.__name__,
+            "model_loss": loss.item(),
+            "model_acc": acc}
 
 def process():
     start_time = timer()
@@ -146,14 +172,23 @@ def process():
     train_loss = train_model(model=model_v0, train_dataset=train_dataset, device=device, train=train)
     
     ### Testing
-    test_loss, test_acc = test_model(model=model_v0, test_dataset=test_dataset, device=device, train=train)
+    # test_loss, test_acc = test_model(model=model_v0, test_dataset=test_dataset, device=device, train=train)
     
     # Print out what's hapepening
-    print(f"\n Train loss: {train_loss:.4f} | Test loss: {test_loss:.4f}, Test acc: {test_acc:.4f}")
+    # print(f"\n Train loss: {train_loss:.4f} | Test loss: {test_loss:.4f}, Test acc: {test_acc:.4f}")
 
     ### Calculate training time
     end_time = timer()
     print_train_time(start=start_time, end=end_time, device=device)
+
+    ### Evaluate the model and collect Accuray metric
+    model_v0_results = eval_model(model=model_v0,
+                                  data_loader=test_dataset, 
+                                  loss_fn=train.loss, 
+                                  accuracy_fn=accuracy_fn,
+                                  device=device)
+
+    print(model_v0_results)
 
 if __name__ == "__main__":
     torch.manual_seed(seed=SEED)

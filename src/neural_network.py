@@ -9,10 +9,11 @@ class xrayModelv0(nn.Module):
         self.layer_stack = nn.Sequential(
             nn.Flatten(),
             nn.Linear(in_features=input_shape,
-                      out_features=hidden_units),
+                      out_features=hidden_units,),
             nn.ReLU(),
             nn.Linear(in_features=hidden_units,
-                      out_features=output_shape),
+                      out_features=output_shape,),
+            nn.ReLU(),
         )
     
     def forward(self, x):
